@@ -1,4 +1,4 @@
-import { Handler } from '@netlify/functions';
+import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 
 const handler: Handler = async (event, context) => {
   const { path, httpMethod, body, queryStringParameters } = event;
@@ -23,7 +23,8 @@ const handler: Handler = async (event, context) => {
   }
 
   try {
-    const apiPath = path.replace('/.netlify/functions/api', '');
+    // Handle both local and Netlify function paths
+    const apiPath = path.replace('/.netlify/functions/api', '').replace('/api', '');
     
     // Neural AI Policy endpoint
     if (apiPath === '/neural-ai-policy' && httpMethod === 'GET') {
