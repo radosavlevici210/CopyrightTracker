@@ -1,0 +1,8 @@
+# Netlify redirects file for Neural AI Biometric System
+# © 2025 Ervin Remus Radosavlevici
+
+# API redirects to Netlify functions
+/api/* /.netlify/functions/api/:splat 200
+
+# SPA routing - redirect all requests to index.html
+/* /index.html 200
