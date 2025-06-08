@@ -11,9 +11,9 @@ export default defineConfig({
   root: 'client',
   base: '/',
   build: {
-    outDir: '../dist/public',
-    sourcemap: false,
-    minify: 'esbuild',
+    outDir: '../dist',
+    sourcemap: true,
+    minify: false,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -32,14 +32,19 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env.NODE_ENV': JSON.stringify('production'),
+    'process.env.NODE_ENV': JSON.stringify('development'),
   },
   server: {
     port: 5000,
     host: '0.0.0.0',
+    open: false,
+    hmr: true,
   },
   preview: {
     port: 5000,
     host: '0.0.0.0',
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'recharts', 'lucide-react'],
   },
 });
