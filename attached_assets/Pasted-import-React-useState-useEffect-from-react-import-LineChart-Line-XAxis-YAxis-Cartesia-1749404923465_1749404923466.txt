@@ -1,0 +1,494 @@
+import React, { useState, useEffect } from ‘react’;
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from ‘recharts’;
+import { Shield, Users, Activity, Lock, AlertTriangle, CheckCircle, XCircle, Eye, FileSignature, Dna, Ban, UserX, Settings, AlertOctagon } from ‘lucide-react’;
+
+const BiometricAccessControlDashboard = () => {
+const [isAuthorized, setIsAuthorized] = useState(false);
+const [authCode, setAuthCode] = useState(’’);
+const [blockedUsers, setBlockedUsers] = useState([]);
+const [securityMode, setSecurityMode] = useState(‘NORMAL’); // NORMAL, HIGH, LOCKDOWN
+const [realTimeData, setRealTimeData] = useState({
+totalUsers: 1247,
+activeUsers: 892,
+todayAuthentications: 3456,
+successRate: 94.2,
+securityAlerts: 3,
+blockedAttempts: 15
+});
+
+const [authenticationData, setAuthenticationData] = useState([
+{ time: ‘08:00’, successful: 287, failed: 12, blocked: 3 },
+{ time: ‘10:00’, successful: 356, failed: 18, blocked: 5 },
+{ time: ‘12:00’, successful: 445, failed: 18, blocked: 2 },
+{ time: ‘14:00’, successful: 398, failed: 16, blocked: 8 },
+{ time: ‘16:00’, successful: 389, failed: 15, blocked: 4 },
+{ time: ‘18:00’, successful: 278, failed: 11, blocked: 6 }
+]);
+
+const [recentAttempts, setRecentAttempts] = useState([
+{ id: 1, user: ‘john.doe@company.com’, method: ‘Face’, status: ‘success’, time: ‘14:23:45’, ip: ‘192.168.1.100’, threat: ‘none’ },
+{ id: 2, user: ‘suspicious.user@external.com’, method: ‘Face’, status: ‘blocked’, time: ‘14:22:12’, ip: ‘203.0.113.45’, threat: ‘high’ },
+{ id: 3, user: ‘jane.smith@company.com’, method: ‘Signature’, status: ‘success’, time: ‘14:21:33’, ip: ‘192.168.1.101’, threat: ‘none’ },
+{ id: 4, user: ‘attacker@malicious.com’, method: ‘DNA’, status: ‘blocked’, time: ‘14:20:15’, ip: ‘198.51.100.42’, threat: ‘critical’ },
+{ id: 5, user: ‘alice.brown@company.com’, method: ‘Face’, status: ‘success’, time: ‘14:19:28’, ip: ‘192.168.1.103’, threat: ‘none’ }
+]);
+
+const [suspiciousIPs, setSuspiciousIPs] = useState([
+{ ip: ‘203.0.113.45’, attempts: 45, blocked: 45, country: ‘Unknown’, threat: ‘High’ },
+{ ip: ‘198.51.100.42’, attempts: 23, blocked: 23, country: ‘Unknown’, threat: ‘Critical’ },
+{ ip: ‘192.0.2.123’, attempts: 12, blocked: 12, country: ‘Unknown’, threat: ‘Medium’ }
+]);
+
+// Authorization check
+const handleAuth = () => {
+if (authCode === ‘ADMIN2025’ || authCode === ‘SECURITY’) {
+setIsAuthorized(true);
+} else {
+alert(‘Access Denied - Invalid Authorization Code’);
+}
+};
+
+// Block user function
+const blockUser = (userEmail, ip) => {
+const newBlock = {
+id: Date.now(),
+user: userEmail,
+ip: ip,
+timestamp: new Date().toLocaleString(),
+reason: ‘Manual Block’
+};
+setBlockedUsers(prev => [newBlock, …prev]);
+
+```
+// Remove from recent attempts
+setRecentAttempts(prev => prev.filter(attempt => attempt.user !== userEmail));
+```
+
+};
+
+// Auto-block suspicious activity
+const autoBlock = () => {
+const suspiciousAttempts = recentAttempts.filter(attempt =>
+attempt.status === ‘failed’ || attempt.threat !== ‘none’
+);
+
+```
+suspiciousAttempts.forEach(attempt => {
+  if (!blockedUsers.find(blocked => blocked.user === attempt.user)) {
+    blockUser(attempt.user, attempt.ip);
+  }
+});
+```
+
+};
+
+// Security mode changes
+const setSecurityLevel = (level) => {
+setSecurityMode(level);
+if (level === ‘LOCKDOWN’) {
+autoBlock();
+}
+};
+
+// Real-time updates
+useEffect(() => {
+if (!isAuthorized) return;
+
+```
+const interval = setInterval(() => {
+  setRealTimeData(prev => ({
+    ...prev,
+    todayAuthentications: prev.todayAuthentications + Math.floor(Math.random() * 2),
+    successRate: 94.2 + (Math.random() - 0.5) * 3,
+    blockedAttempts: prev.blockedAttempts + (Math.random() > 0.8 ? 1 : 0)
+  }));
+
+  // Simulate new authentication attempts
+  if (Math.random() > 0.6) {
+    const isAttack = Math.random() > 0.7;
+    const newAttempt = {
+      id: Date.now(),
+      user: isAttack ? `attacker${Math.floor(Math.random() * 100)}@suspicious.com` : `user${Math.floor(Math.random() * 100)}@company.com`,
+      method: ['Face', 'Signature', 'DNA'][Math.floor(Math.random() * 3)],
+      status: isAttack ? (securityMode === 'LOCKDOWN' ? 'blocked' : 'failed') : 'success',
+      time: new Date().toLocaleTimeString(),
+      ip: isAttack ? `203.0.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}` : `192.168.1.${100 + Math.floor(Math.random() * 50)}`,
+      threat: isAttack ? (Math.random() > 0.5 ? 'critical' : 'high') : 'none'
+    };
+    
+    setRecentAttempts(prev => [newAttempt, ...prev.slice(0, 9)]);
+
+    // Auto-block in high security mode
+    if ((securityMode === 'HIGH' || securityMode === 'LOCKDOWN') && isAttack) {
+      setTimeout(() => blockUser(newAttempt.user, newAttempt.ip), 1000);
+    }
+  }
+}, 2000);
+
+return () => clearInterval(interval);
+```
+
+}, [isAuthorized, securityMode]);
+
+// Login screen
+if (!isAuthorized) {
+return (
+<div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-6">
+<div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-8 max-w-md w-full">
+<div className="text-center mb-6">
+<Shield className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+<h1 className="text-2xl font-bold text-white mb-2">Secure Access Required</h1>
+<p className="text-slate-400">Enter authorization code to continue</p>
+</div>
+
+```
+      <div className="space-y-4">
+        <input
+          type="password"
+          placeholder="Enter access code..."
+          value={authCode}
+          onChange={(e) => setAuthCode(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleAuth()}
+          className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+        />
+        <button
+          onClick={handleAuth}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition-all"
+        >
+          Access System
+        </button>
+      </div>
+      
+      <div className="mt-6 text-xs text-slate-500 text-center">
+        <p>Hint: ADMIN2025 or SECURITY</p>
+      </div>
+    </div>
+  </div>
+);
+```
+
+}
+
+const getStatusIcon = (status) => {
+switch (status) {
+case ‘success’:
+return <CheckCircle className="w-5 h-5 text-green-500" />;
+case ‘failed’:
+return <XCircle className="w-5 h-5 text-red-500" />;
+case ‘blocked’:
+return <Ban className="w-5 h-5 text-red-600" />;
+default:
+return <XCircle className="w-5 h-5 text-red-500" />;
+}
+};
+
+const getMethodIcon = (method) => {
+switch (method) {
+case ‘Face’:
+return <Eye className="w-4 h-4" />;
+case ‘Signature’:
+return <FileSignature className="w-4 h-4" />;
+case ‘DNA’:
+return <Dna className="w-4 h-4" />;
+default:
+return <Shield className="w-4 h-4" />;
+}
+};
+
+const getThreatColor = (threat) => {
+switch (threat) {
+case ‘critical’:
+return ‘text-red-500 bg-red-500/20’;
+case ‘high’:
+return ‘text-orange-500 bg-orange-500/20’;
+case ‘medium’:
+return ‘text-yellow-500 bg-yellow-500/20’;
+case ‘none’:
+return ‘text-green-500 bg-green-500/20’;
+default:
+return ‘text-gray-500 bg-gray-500/20’;
+}
+};
+
+const getSecurityModeColor = (mode) => {
+switch (mode) {
+case ‘NORMAL’:
+return ‘bg-green-600’;
+case ‘HIGH’:
+return ‘bg-yellow-600’;
+case ‘LOCKDOWN’:
+return ‘bg-red-600’;
+default:
+return ‘bg-gray-600’;
+}
+};
+
+return (
+<div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
+<div className="max-w-7xl mx-auto">
+{/* Header with Security Controls */}
+<div className="mb-8 flex items-center justify-between">
+<div>
+<h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+<Shield className="w-10 h-10 text-blue-400" />
+Biometric Security Dashboard
+</h1>
+<p className="text-slate-300">Real-time monitoring and threat protection</p>
+</div>
+
+```
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-400 text-sm">Security Level:</span>
+          <select 
+            value={securityMode}
+            onChange={(e) => setSecurityLevel(e.target.value)}
+            className={`px-3 py-1 rounded text-white text-sm font-medium ${getSecurityModeColor(securityMode)}`}
+          >
+            <option value="NORMAL">Normal</option>
+            <option value="HIGH">High Alert</option>
+            <option value="LOCKDOWN">Lockdown</option>
+          </select>
+        </div>
+        
+        <button
+          onClick={autoBlock}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+        >
+          <Ban className="w-4 h-4" />
+          Block Threats
+        </button>
+      </div>
+    </div>
+
+    {/* Security Alert Banner */}
+    {securityMode !== 'NORMAL' && (
+      <div className={`mb-6 p-4 rounded-xl border-2 ${
+        securityMode === 'HIGH' ? 'bg-yellow-500/10 border-yellow-500 text-yellow-400' : 
+        'bg-red-500/10 border-red-500 text-red-400'
+      }`}>
+        <div className="flex items-center gap-3">
+          <AlertOctagon className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold">
+              {securityMode === 'HIGH' ? 'High Security Alert Active' : 'SYSTEM LOCKDOWN ACTIVE'}
+            </h3>
+            <p className="text-sm opacity-90">
+              {securityMode === 'HIGH' ? 'Enhanced monitoring enabled - suspicious activity will be auto-blocked' : 
+               'All external access blocked - only verified users allowed'}
+            </p>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Main Stats */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Total Users</p>
+            <p className="text-xl font-bold text-white">{realTimeData.totalUsers.toLocaleString()}</p>
+          </div>
+          <Users className="w-6 h-6 text-blue-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Active Now</p>
+            <p className="text-xl font-bold text-green-400">{realTimeData.activeUsers.toLocaleString()}</p>
+          </div>
+          <Activity className="w-6 h-6 text-green-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Authentications</p>
+            <p className="text-xl font-bold text-blue-400">{realTimeData.todayAuthentications.toLocaleString()}</p>
+          </div>
+          <Lock className="w-6 h-6 text-blue-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Success Rate</p>
+            <p className="text-xl font-bold text-green-400">{realTimeData.successRate.toFixed(1)}%</p>
+          </div>
+          <CheckCircle className="w-6 h-6 text-green-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Blocked</p>
+            <p className="text-xl font-bold text-red-400">{realTimeData.blockedAttempts}</p>
+          </div>
+          <Ban className="w-6 h-6 text-red-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-medium">Alerts</p>
+            <p className="text-xl font-bold text-orange-400">{realTimeData.securityAlerts}</p>
+          </div>
+          <AlertTriangle className="w-6 h-6 text-orange-400" />
+        </div>
+      </div>
+    </div>
+
+    {/* Charts and Activity */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Authentication Chart */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4">Authentication Activity</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={authenticationData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="time" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #374151',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="successful" fill="#10b981" />
+              <Bar dataKey="failed" fill="#ef4444" />
+              <Bar dataKey="blocked" fill="#dc2626" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Activity className="w-5 h-5" />
+          Live Authentication Feed
+        </h3>
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {recentAttempts.map((attempt) => (
+            <div key={attempt.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                {getStatusIcon(attempt.status)}
+                <div className="flex items-center gap-2">
+                  {getMethodIcon(attempt.method)}
+                  <span className="text-slate-300 text-sm">{attempt.method}</span>
+                </div>
+                <div>
+                  <p className="text-white text-sm font-medium">{attempt.user}</p>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs">
+                    <span>{attempt.ip}</span>
+                    {attempt.threat !== 'none' && (
+                      <>
+                        <span>•</span>
+                        <span className={`px-2 py-1 rounded text-xs ${getThreatColor(attempt.threat)}`}>
+                          {attempt.threat.toUpperCase()}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <p className="text-slate-300 text-sm">{attempt.time}</p>
+                  <p className={`text-xs font-medium ${
+                    attempt.status === 'success' ? 'text-green-400' : 
+                    attempt.status === 'blocked' ? 'text-red-600' : 'text-red-400'
+                  }`}>
+                    {attempt.status.toUpperCase()}
+                  </p>
+                </div>
+                {(attempt.status === 'failed' || attempt.threat !== 'none') && (
+                  <button
+                    onClick={() => blockUser(attempt.user, attempt.ip)}
+                    className="bg-red-600 hover:bg-red-700 text-white p-1 rounded"
+                    title="Block User"
+                  >
+                    <UserX className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Blocked Users and Suspicious IPs */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Blocked Users */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Ban className="w-5 h-5 text-red-400" />
+          Blocked Users ({blockedUsers.length})
+        </h3>
+        <div className="space-y-3 max-h-64 overflow-y-auto">
+          {blockedUsers.length === 0 ? (
+            <p className="text-slate-400 text-center py-4">No blocked users</p>
+          ) : (
+            blockedUsers.map((blocked) => (
+              <div key={blocked.id} className="flex items-center justify-between p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <div>
+                  <p className="text-white font-medium">{blocked.user}</p>
+                  <p className="text-slate-400 text-sm">IP: {blocked.ip}</p>
+                  <p className="text-slate-400 text-xs">Blocked: {blocked.timestamp}</p>
+                </div>
+                <div className="text-red-400">
+                  <Ban className="w-5 h-5" />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Suspicious IPs */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <AlertTriangle className="w-5 h-5 text-orange-400" />
+          Suspicious IP Addresses
+        </h3>
+        <div className="space-y-3">
+          {suspiciousIPs.map((ip, index) => (
+            <div key={index} className="flex items-center justify-between p-3 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+              <div>
+                <p className="text-white font-medium">{ip.ip}</p>
+                <p className="text-slate-400 text-sm">{ip.attempts} attempts • {ip.blocked} blocked</p>
+              </div>
+              <div className="text-right">
+                <span className={`px-2 py-1 rounded text-xs font-medium ${getThreatColor(ip.threat.toLowerCase())}`}>
+                  {ip.threat}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="mt-8 text-center text-slate-400 text-sm">
+      <p>Biometric Security Dashboard | Real-time threat protection and monitoring</p>
+      <p className="mt-1">Security Level: {securityMode} | System Status: {securityMode === 'LOCKDOWN' ? 'LOCKED DOWN' : 'OPERATIONAL'}</p>
+    </div>
+  </div>
+</div>
+```
+
+);
+};
+
+export default BiometricAccessControlDashboard;

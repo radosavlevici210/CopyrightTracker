@@ -1,0 +1,315 @@
+import React, { useState, useEffect } from ‘react’;
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from ‘recharts’;
+import { Shield, Users, Activity, Lock, AlertTriangle, CheckCircle, XCircle, Eye, FileSignature, Dna } from ‘lucide-react’;
+
+const BiometricAccessControlDashboard = () => {
+const [realTimeData, setRealTimeData] = useState({
+totalUsers: 1247,
+activeUsers: 892,
+todayAuthentications: 3456,
+successRate: 94.2,
+securityAlerts: 3
+});
+
+const [authenticationData, setAuthenticationData] = useState([
+{ time: ‘00:00’, successful: 45, failed: 3, total: 48 },
+{ time: ‘04:00’, successful: 23, failed: 1, total: 24 },
+{ time: ‘08:00’, successful: 287, failed: 12, total: 299 },
+{ time: ‘12:00’, successful: 445, failed: 18, total: 463 },
+{ time: ‘16:00’, successful: 389, failed: 15, total: 404 },
+{ time: ‘20:00’, successful: 156, failed: 7, total: 163 }
+]);
+
+const [biometricMethods, setBiometricMethods] = useState([
+{ name: ‘Facial Recognition’, value: 45, color: ‘#3b82f6’ },
+{ name: ‘Signature Verification’, value: 30, color: ‘#10b981’ },
+{ name: ‘DNA Analysis’, value: 25, color: ‘#f59e0b’ }
+]);
+
+const [recentAttempts, setRecentAttempts] = useState([
+{ id: 1, user: ‘john.doe@company.com’, method: ‘Face’, status: ‘success’, time: ‘14:23:45’, ip: ‘192.168.1.100’ },
+{ id: 2, user: ‘jane.smith@company.com’, method: ‘Signature’, status: ‘success’, time: ‘14:22:12’, ip: ‘192.168.1.101’ },
+{ id: 3, user: ‘bob.wilson@company.com’, method: ‘DNA’, status: ‘failed’, time: ‘14:21:33’, ip: ‘192.168.1.102’ },
+{ id: 4, user: ‘alice.brown@company.com’, method: ‘Face’, status: ‘success’, time: ‘14:20:15’, ip: ‘192.168.1.103’ },
+{ id: 5, user: ‘charlie.davis@company.com’, method: ‘Signature’, status: ‘success’, time: ‘14:19:28’, ip: ‘192.168.1.104’ }
+]);
+
+const [systemHealth, setSystemHealth] = useState([
+{ component: ‘Database’, status: ‘healthy’, uptime: ‘99.9%’, responseTime: ‘12ms’ },
+{ component: ‘Face Recognition API’, status: ‘healthy’, uptime: ‘99.7%’, responseTime: ‘245ms’ },
+{ component: ‘Signature API’, status: ‘warning’, uptime: ‘98.2%’, responseTime: ‘156ms’ },
+{ component: ‘DNA Analysis API’, status: ‘healthy’, uptime: ‘99.8%’, responseTime: ‘189ms’ },
+{ component: ‘Redis Cache’, status: ‘healthy’, uptime: ‘100%’, responseTime: ‘3ms’ }
+]);
+
+// Simulate real-time updates
+useEffect(() => {
+const interval = setInterval(() => {
+setRealTimeData(prev => ({
+…prev,
+todayAuthentications: prev.todayAuthentications + Math.floor(Math.random() * 3),
+successRate: 94.2 + (Math.random() - 0.5) * 2
+}));
+
+```
+  // Add new authentication attempt
+  if (Math.random() > 0.7) {
+    const newAttempt = {
+      id: Date.now(),
+      user: `user${Math.floor(Math.random() * 1000)}@company.com`,
+      method: ['Face', 'Signature', 'DNA'][Math.floor(Math.random() * 3)],
+      status: Math.random() > 0.1 ? 'success' : 'failed',
+      time: new Date().toLocaleTimeString(),
+      ip: `192.168.1.${100 + Math.floor(Math.random() * 50)}`
+    };
+    
+    setRecentAttempts(prev => [newAttempt, ...prev.slice(0, 4)]);
+  }
+}, 3000);
+
+return () => clearInterval(interval);
+```
+
+}, []);
+
+const getStatusIcon = (status) => {
+switch (status) {
+case ‘success’:
+return <CheckCircle className="w-5 h-5 text-green-500" />;
+case ‘failed’:
+return <XCircle className="w-5 h-5 text-red-500" />;
+case ‘healthy’:
+return <CheckCircle className="w-4 h-4 text-green-500" />;
+case ‘warning’:
+return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+default:
+return <XCircle className="w-4 h-4 text-red-500" />;
+}
+};
+
+const getMethodIcon = (method) => {
+switch (method) {
+case ‘Face’:
+return <Eye className="w-4 h-4" />;
+case ‘Signature’:
+return <FileSignature className="w-4 h-4" />;
+case ‘DNA’:
+return <Dna className="w-4 h-4" />;
+default:
+return <Shield className="w-4 h-4" />;
+}
+};
+
+return (
+<div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-6">
+<div className="max-w-7xl mx-auto">
+{/* Header */}
+<div className="mb-8">
+<h1 className="text-4xl font-bold text-white mb-2 flex items-center gap-3">
+<Shield className="w-10 h-10 text-blue-400" />
+Biometric Access Control System
+</h1>
+<p className="text-slate-300 text-lg">Enterprise-grade authentication monitoring and analytics</p>
+<div className="text-sm text-slate-400 mt-2">
+Last updated: {new Date().toLocaleString()} | System Status: Operational
+</div>
+</div>
+
+```
+    {/* Real-time Stats */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-sm font-medium">Total Users</p>
+            <p className="text-2xl font-bold text-white">{realTimeData.totalUsers.toLocaleString()}</p>
+          </div>
+          <Users className="w-8 h-8 text-blue-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-sm font-medium">Active Users</p>
+            <p className="text-2xl font-bold text-green-400">{realTimeData.activeUsers.toLocaleString()}</p>
+          </div>
+          <Activity className="w-8 h-8 text-green-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-sm font-medium">Today's Authentications</p>
+            <p className="text-2xl font-bold text-blue-400">{realTimeData.todayAuthentications.toLocaleString()}</p>
+          </div>
+          <Lock className="w-8 h-8 text-blue-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-sm font-medium">Success Rate</p>
+            <p className="text-2xl font-bold text-green-400">{realTimeData.successRate.toFixed(1)}%</p>
+          </div>
+          <CheckCircle className="w-8 h-8 text-green-400" />
+        </div>
+      </div>
+
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-sm font-medium">Security Alerts</p>
+            <p className="text-2xl font-bold text-red-400">{realTimeData.securityAlerts}</p>
+          </div>
+          <AlertTriangle className="w-8 h-8 text-red-400" />
+        </div>
+      </div>
+    </div>
+
+    {/* Charts Section */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Authentication Timeline */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4">Authentication Timeline</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={authenticationData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <XAxis dataKey="time" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#1e293b', 
+                  border: '1px solid #374151',
+                  borderRadius: '8px'
+                }}
+              />
+              <Line type="monotone" dataKey="successful" stroke="#10b981" strokeWidth={3} />
+              <Line type="monotone" dataKey="failed" stroke="#ef4444" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Biometric Methods Distribution */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4">Biometric Methods Usage</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={biometricMethods}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                dataKey="value"
+              >
+                {biometricMethods.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="mt-4 space-y-2">
+          {biometricMethods.map((method, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div 
+                  className="w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: method.color }}
+                ></div>
+                <span className="text-slate-300 text-sm">{method.name}</span>
+              </div>
+              <span className="text-white font-medium">{method.value}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Recent Activity and System Health */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Recent Authentication Attempts */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Activity className="w-5 h-5" />
+          Recent Authentication Attempts
+        </h3>
+        <div className="space-y-3">
+          {recentAttempts.map((attempt) => (
+            <div key={attempt.id} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                {getStatusIcon(attempt.status)}
+                <div>
+                  <p className="text-white text-sm font-medium">{attempt.user}</p>
+                  <div className="flex items-center gap-2 text-slate-400 text-xs">
+                    {getMethodIcon(attempt.method)}
+                    <span>{attempt.method}</span>
+                    <span>•</span>
+                    <span>{attempt.ip}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-slate-300 text-sm">{attempt.time}</p>
+                <p className={`text-xs font-medium ${
+                  attempt.status === 'success' ? 'text-green-400' : 'text-red-400'
+                }`}>
+                  {attempt.status.toUpperCase()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* System Health */}
+      <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl p-6">
+        <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+          <Shield className="w-5 h-5" />
+          System Health
+        </h3>
+        <div className="space-y-3">
+          {systemHealth.map((component, index) => (
+            <div key={index} className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
+              <div className="flex items-center gap-3">
+                {getStatusIcon(component.status)}
+                <div>
+                  <p className="text-white text-sm font-medium">{component.component}</p>
+                  <p className="text-slate-400 text-xs">Uptime: {component.uptime}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-slate-300 text-sm">{component.responseTime}</p>
+                <p className={`text-xs font-medium ${
+                  component.status === 'healthy' ? 'text-green-400' : 
+                  component.status === 'warning' ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {component.status.toUpperCase()}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="mt-8 text-center text-slate-400 text-sm">
+      <p>Biometric Access Control System | Real-time monitoring and analytics</p>
+      <p className="mt-1">Enterprise-grade security with multi-factor authentication</p>
+    </div>
+  </div>
+</div>
+```
+
+);
+};
+
+export default BiometricAccessControlDashboard;
